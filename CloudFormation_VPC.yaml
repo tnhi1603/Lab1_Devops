@@ -119,7 +119,7 @@ Resources:
       GroupDescription: "Default security group for VPC"
       VpcId: !Ref MyVPC
       SecurityGroupIngress:
-        - IpProtocol: "-1" # Allow all inbound traffic (should be restricted in production)
+        - IpProtocol: "-1" # Allow all inbound traffic
           CidrIp: "0.0.0.0/0"
       SecurityGroupEgress:
         - IpProtocol: "-1" # Allow all outbound traffic
