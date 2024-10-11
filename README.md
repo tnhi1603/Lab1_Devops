@@ -7,7 +7,7 @@
   ```bash
   aws cloudformation create-stack --stack-name MyVPC --template-body file://CloudFormation_VPC.yaml
   ```
-  để tạo stack.
+  để tạo stack trên CloudFormation.
   + Sau đó kiểm tra tiến trình tạo stack bằng lệnh:
   ```bash
   aws cloudformation describe-stacks --stack-name MyVPC
