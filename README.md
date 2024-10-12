@@ -11,15 +11,15 @@
   + Cấu hình aws configure với AWS Access Key ID, AWS Secret Access Key, Default region name (us-east-1)
 
   ### Chạy lệnh:
-  **Khởi tạo terraform**
+  Khởi tạo terraform
   ```bash
   terraform init
   ```
-  **Tạo kế hoạch thực thi terraform**
+  Tạo kế hoạch thực thi terraform
   ```bash
   terraform plan
   ```
-  **Thực thi code terraform**
+  Thực thi code terraform
   ```bash
   terraform aplly
   ```
