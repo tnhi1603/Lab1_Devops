@@ -11,18 +11,18 @@
     + Cấu hình aws configure với AWS Access Key ID, AWS Secret Access Key, Default region name (us-east-1)
 
   + Chạy lệnh:
-  Khởi tạo terraform
-  ```bash
-  terraform init
-  ```
-  Tạo kế hoạch thực thi terraform
-  ```bash
-  terraform plan
-  ```
-  Thực thi code terraform
-  ```bash
-  terraform aplly
-  ```
+    Khởi tạo terraform
+    ```bash
+    terraform init
+    ```
+    Tạo kế hoạch thực thi terraform
+    ```bash
+    terraform plan
+    ```
+    Thực thi code terraform
+    ```bash
+    terraform aplly
+    ```
   + Lưu ý: Dọn dẹp 
   Sau khi triển khai và kiểm tra thành công, xóa các tài nguyên đã triển khai để tránh mất phí aws
   ```bash
