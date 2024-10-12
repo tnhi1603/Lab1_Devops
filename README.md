@@ -1,5 +1,5 @@
 # Lab1_Devops: Triển khai hạ tầng AWS với Terraform và Cloudmation
-tasks: 
+***Tasks:** 
 - Sử dụng Terraform và Cloudmation triển khai dịch vụ trên AWS: VPC, Subnets, NAT Gateway, Route Tables, EC2 instances
 - Thiết lập sercurity groups cho EC2
 - Các test case dùng kiểm tra các dịch vụ đã triển khai
@@ -11,21 +11,20 @@ tasks:
   + Cấu hình aws configure với AWS Access Key ID, AWS Secret Access Key, Default region name (us-east-1)
 
   ### Chạy lệnh:
-  **khởi tạo terraform**
+  **Khởi tạo terraform**
   ```bash
   terraform init
   ```
-  **tạo kế hoạch thực thi terraform**
+  **Tạo kế hoạch thực thi terraform**
   ```bash
   terraform plan
   ```
-    **thực thi code terraform**
+  **Thực thi code terraform**
   ```bash
   terraform aplly
   ```
-  ### Test case : Kiểm tra kết quả triển khai tài nguyên aws trên terraform 
-  ### lưu ý: Destroy
-    Sau khi triển khai và kiểm tra thành công, xóa các tài nguyên đã triển khai để tránh mất phí aws
+  ### Lưu ý: Dọn dẹp 
+  Sau khi triển khai và kiểm tra thành công, xóa các tài nguyên đã triển khai để tránh mất phí aws
   ```bash
   terraform destroy
   ```
