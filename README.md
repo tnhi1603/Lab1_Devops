@@ -11,6 +11,7 @@
     + Cấu hình aws configure với AWS Access Key ID, AWS Secret Access Key, Default region name (us-east-1)
 
   + Chạy lệnh:
+
     Khởi tạo terraform
     ```bash
     terraform init
@@ -24,10 +25,11 @@
     terraform aplly
     ```
   + Lưu ý: Dọn dẹp 
-  Sau khi triển khai và kiểm tra thành công, xóa các tài nguyên đã triển khai để tránh mất phí aws
-  ```bash
-  terraform destroy
-  ```
+
+    Sau khi triển khai và kiểm tra thành công, xóa các tài nguyên đã triển khai để tránh mất phí aws
+    ```bash
+    terraform destroy
+    ```
 ## 2. Cấu hình VPC bằng CloudFormation
   + Sử dụng AWS CLI
   + Cấu hình aws configure với AWS Access Key ID, AWS Secret Access Key, Default region name (ap-southeast-2), Default output format.
