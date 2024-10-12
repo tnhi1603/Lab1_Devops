@@ -1,14 +1,16 @@
-variable "vpc_cidr_block" {
+variable "vpc_cidr" {
+>>>>>>> NguyenHuuThanh
   description = "The CIDR block for the VPC"
   type        = string
 }
 
-variable "vpc_publicSubnet_cidr_block" {
+variable "publicSubnet_cidr" {
   type        = string
-  description = "vpc_publicSubnet_cidr_block"
+  description = "publicSubnet_cidr"
 }
 
-variable "vpc_privateSubnet_cidr_block" {
+variable "privateSubnet_cidr" {
   type        = string
-  description = "vpc_privateSubnet_cidr_block"
+  description = "privateSubnet_cidr"
+>>>>>>> NguyenHuuThanh
 }
