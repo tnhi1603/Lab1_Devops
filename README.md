@@ -5,12 +5,12 @@
 - Các test case dùng kiểm tra các dịch vụ đã triển khai
 
 ## 1. Cấu hình VPC bằng Terraform 
-  ### Setup các tài nguyên cần thiết:
-  + Cài đặt Terraform: [Terraform installation guide](https://learn.hashicorp.com/tutorials/terraform/install-cli).  
-  + Cài đặt AWS CLI. 
-  + Cấu hình aws configure với AWS Access Key ID, AWS Secret Access Key, Default region name (us-east-1)
+  + Setup các tài nguyên cần thiết:
+    + Cài đặt Terraform: [Terraform installation guide](https://learn.hashicorp.com/tutorials/terraform/install-cli).  
+    + Cài đặt AWS CLI. 
+    + Cấu hình aws configure với AWS Access Key ID, AWS Secret Access Key, Default region name (us-east-1)
 
-  ### Chạy lệnh:
+  + Chạy lệnh:
   Khởi tạo terraform
   ```bash
   terraform init
@@ -23,7 +23,7 @@
   ```bash
   terraform aplly
   ```
-  ### Lưu ý: Dọn dẹp 
+  + Lưu ý: Dọn dẹp 
   Sau khi triển khai và kiểm tra thành công, xóa các tài nguyên đã triển khai để tránh mất phí aws
   ```bash
   terraform destroy
