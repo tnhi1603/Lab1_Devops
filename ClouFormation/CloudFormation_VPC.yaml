@@ -1,129 +1,173 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Deploy a VPC with Public and Private Subnets, EC2 Instances, and Security Groups.
+
+Parameters:
+  VPCName:
+    Description: Name of the VPC
+    Type: String
+    Default: MyVPC
+  PublicSubnetCIDR:
+    Description: CIDR block for the Public Subnet
+    Type: String
+    Default: 10.0.1.0/24
+  PrivateSubnetCIDR:
+    Description: CIDR block for the Private Subnet
+    Type: String
+    Default: 10.0.2.0/24
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t2.micro
+  SSHLocation:
+    Description: IP address range that can SSH to the Public EC2 instance
+    Type: String
+    Default: 0.0.0.0/0
+
 Resources:
   # VPC
   MyVPC:
-    Type: "AWS::EC2::VPC"
+    Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: "10.0.0.0/16"
-      EnableDnsSupport: "true"
-      EnableDnsHostnames: "true"
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
       Tags:
-        - Key: "Name"
-          Value: "MyVPC"
+        - Key: Name
+          Value: !Ref VPCName
 
   # Internet Gateway
   MyInternetGateway:
-    Type: "AWS::EC2::InternetGateway"
-    Properties:
-      Tags:
-        - Key: "Name"
-          Value: "MyInternetGateway"
+    Type: AWS::EC2::InternetGateway
 
-  # Attach Internet Gateway to VPC
   AttachGateway:
-    Type: "AWS::EC2::VPCGatewayAttachment"
+    Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref MyVPC
       InternetGatewayId: !Ref MyInternetGateway
 
   # Public Subnet
-  MyPublicSubnet:
-    Type: "AWS::EC2::Subnet"
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
     Properties:
-      CidrBlock: "10.0.1.0/24"
       VpcId: !Ref MyVPC
-      AvailabilityZone: "ap-southeast-2b"
-      MapPublicIpOnLaunch: "true"
-      Tags:
-        - Key: "Name"
-          Value: "MyPublicSubnet"
+      CidrBlock: !Ref PublicSubnetCIDR
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [0, !GetAZs 'ap-southeast-2']
 
   # Private Subnet
-  MyPrivateSubnet:
-    Type: "AWS::EC2::Subnet"
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
     Properties:
-      CidrBlock: "10.0.2.0/24"
       VpcId: !Ref MyVPC
-      AvailabilityZone: "ap-southeast-2b"
-      Tags:
-        - Key: "Name"
-          Value: "MyPrivateSubnet"
+      CidrBlock: !Ref PrivateSubnetCIDR
+      MapPublicIpOnLaunch: false
+      AvailabilityZone: !Select [1, !GetAZs 'ap-southeast-2']
 
   # NAT Gateway
+  MyEIP:
+    Type: AWS::EC2::EIP
+
   MyNATGateway:
-    Type: "AWS::EC2::NatGateway"
+    Type: AWS::EC2::NatGateway
     Properties:
       AllocationId: !GetAtt MyEIP.AllocationId
-      SubnetId: !Ref MyPublicSubnet
-      Tags:
-        - Key: "Name"
-          Value: "MyNATGateway"
+      SubnetId: !Ref PublicSubnet
 
-  # Elastic IP for NAT Gateway
-  MyEIP:
-    Type: "AWS::EC2::EIP"
-    Properties:
-      Domain: "vpc"
-
-  # Public Route Table
-  MyPublicRouteTable:
-    Type: "AWS::EC2::RouteTable"
+  # Route Table for Public Subnet
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref MyVPC
-      Tags:
-        - Key: "Name"
-          Value: "MyPublicRouteTable"
 
-  # Public Route for Internet Access
-  MyPublicRoute:
-    Type: "AWS::EC2::Route"
+  PublicRoute:
+    Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !Ref MyPublicRouteTable
-      DestinationCidrBlock: "0.0.0.0/0"
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref MyInternetGateway
 
-  # Associate Public Subnet with Public Route Table
   PublicSubnetRouteTableAssociation:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref MyPublicSubnet
-      RouteTableId: !Ref MyPublicRouteTable
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
 
-  # Private Route Table
-  MyPrivateRouteTable:
-    Type: "AWS::EC2::RouteTable"
+  # Route Table for Private Subnet
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref MyVPC
-      Tags:
-        - Key: "Name"
-          Value: "MyPrivateRouteTable"
 
-  # Private Route for NAT Gateway
-  MyPrivateRoute:
-    Type: "AWS::EC2::Route"
+  PrivateRoute:
+    Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !Ref MyPrivateRouteTable
-      DestinationCidrBlock: "0.0.0.0/0"
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref MyNATGateway
 
-  # Associate Private Subnet with Private Route Table
   PrivateSubnetRouteTableAssociation:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref MyPrivateSubnet
-      RouteTableId: !Ref MyPrivateRouteTable
+      SubnetId: !Ref PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
 
-  # Default Security Group for VPC
-  DefaultSecurityGroup:
-    Type: "AWS::EC2::SecurityGroup"
+  # Security Group for Public EC2
+  PublicEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: "Default security group for VPC"
+      GroupDescription: Allow SSH access to the Public EC2 instance
       VpcId: !Ref MyVPC
       SecurityGroupIngress:
-        - IpProtocol: "-1" # Allow all inbound traffic
-          CidrIp: "0.0.0.0/0"
-      SecurityGroupEgress:
-        - IpProtocol: "-1" # Allow all outbound traffic
-          CidrIp: "0.0.0.0/0"
-      Tags:
-        - Key: "Name"
-          Value: "DefaultSecurityGroup"
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref SSHLocation
+
+  # Security Group for Private EC2
+  PrivateEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow access from Public EC2 instance
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: !Ref PublicEC2SecurityGroup
+
+  # Public EC2 Instance
+  PublicEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      SubnetId: !Ref PublicSubnet
+      SecurityGroupIds:
+        - !Ref PublicEC2SecurityGroup
+      ImageId: ami-0c4fb412220c0be2d # Replace with your desired AMI
+
+  # Private EC2 Instance
+  PrivateEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      SubnetId: !Ref PrivateSubnet
+      SecurityGroupIds:
+        - !Ref PrivateEC2SecurityGroup
+      ImageId: ami-0c4fb412220c0be2d # Replace with your desired AMI
+
+Outputs:
+  VPCId:
+    Description: The VPC ID
+    Value: !Ref MyVPC
+  PublicSubnetId:
+    Description: The Public Subnet ID
+    Value: !Ref PublicSubnet
+  PrivateSubnetId:
+    Description: The Private Subnet ID
+    Value: !Ref PrivateSubnet
+  PublicEC2InstanceId:
+    Description: The Public EC2 Instance ID
+    Value: !Ref PublicEC2Instance
+  PrivateEC2InstanceId:
+    Description: The Private EC2 Instance ID
+    Value: !Ref PrivateEC2Instance
