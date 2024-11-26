@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+    commands:
+      - pip install taskcat
+      - pip install cfn-lint
+
+  pre_build:
+    commands:
+      - echo "Linting CloudFormation templates..."
+      - cfn-lint CloudFormation_template.yaml  
+
+  build:
+    commands:
+      - echo "Running TaskCat tests..."
+      - taskcat test run 
+
+  post_build:
+    commands:
+      - echo "Deployment completed"
+
+artifacts:
+  files:
+    - CloudFormation_template.yaml
